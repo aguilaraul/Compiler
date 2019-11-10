@@ -1,3 +1,4 @@
+
 /**
  * @author  Raul Aguilar
  * @date    09 November 2019
@@ -6,6 +7,7 @@
  */
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 // TODO: write clean line method
@@ -14,8 +16,10 @@ public class JackTokenizer {
     //private static String VALID_SYMBOLS = "{}()[].,;+-*/&|<>=~";
 
     private Scanner inputFile;
+    PrintWriter outputFile = null;
     private String rawInput;
     private String cleanInput;
+    private int lineNumber;
     private String[] atoms;
     private String atom;
     private TokenType tokenType;
@@ -29,13 +33,42 @@ public class JackTokenizer {
      * Opens the input .jack file and gets ready to tokenize it
      * @param fileName Name of the vm file
      */
-    public void JackTokenizer(String fileName) {
+    public void tokenizer(String fileName) {
         try {
             inputFile = new Scanner(new FileReader(fileName));
         } catch (FileNotFoundException e) {
             System.err.println("File could not be found. Exiting program.");
             System.exit(0);
         }
+    }
+
+    /**
+     * Opens output file and gets ready to write to it
+     * @param fileName  Name of the output file
+     */
+    public void xmlWriter(String fileName) {
+        try {
+            outputFile = new PrintWriter(fileName);
+        } catch (FileNotFoundException e) {
+            System.err.println("Could not open output file " + fileName);
+            System.err.println("Run program again, make sure you have write permissions, etc.");
+            System.err.println("Program exiting.");
+            System.exit(0);
+        }
+    }
+
+    //@Incomplete: Write javadoc
+    public void printElement(String tag, String value) {
+        outputFile.print("<"+tag+"> ");
+        outputFile.print(value);
+        outputFile.println(" </"+tag+">");
+    }
+
+    /**
+     * Closes the output file stream
+     */
+    public void close() {
+        outputFile.close();
     }
 
     /**
@@ -56,42 +89,63 @@ public class JackTokenizer {
      * called only if hasMoreTokens() is true. Initially there is no current token.
      */
     public void advance() {
+        //  if current line is empty
+        //      read new line from file into rawline, increase line #
+        //      end function if rawline is empty (no point in parsing)
+        lineNumber++;
         rawInput = inputFile.nextLine();
-        cleanLine();
-        atoms = cleanInput.split(" ");
-        parseKeyword();
+        if(!rawInput.isEmpty()) {
+            //      remove comments from line and white space
+            cleanLine();
+            //      end function if currentline is empty (no point in parsing)
+            if(!cleanInput.isEmpty()) {
+                // call parse method (should parse based off current line)
+                atoms = cleanInput.split(" ");
+                outputFile.println(cleanInput);
+                for(Keyword key: Keyword.values()) {
+                    if(getCleanLine().startsWith(key.name().toLowerCase())) {
+                        outputFile.println(key.name());
+                    }
+                }
+            }
+        }
+    }
+
+    private void parseToken() {
+        
     }
 
     /**
      * Strips the current line from the file of comments and white space.
      */
     private void cleanLine() {
-        int commentIndex = rawInput.indexOf('/');
+        int commentIndex = rawInput.indexOf("//");
         if(commentIndex > -1) {
             cleanInput = rawInput.substring(0, commentIndex);
         } else {
-            cleanInput = rawInput;
+            commentIndex = rawInput.indexOf("/*");
+            if(commentIndex > -1) {
+                cleanInput = rawInput.substring(0, commentIndex);
+            } else {
+                cleanInput = rawInput;
+            }
         }
         cleanInput = cleanInput.trim();
     }
 
-    private void parseTokenType() {
-
-    }
-
-    private void parseKeyword() {
-        switch (atoms[0]) {
-            case "class":
-                keyword = Keyword.CLASS;
-                break;
-            case "constructor":
-                keyword = Keyword.CONSTRUCTOR;
-                break;
-
-        }
-    }
-
     /* GETTERS */
+
+    public String getCleanLine() {
+        return cleanInput;
+    }
+
+    /**
+     * Returns the line number of the current line
+     * @return  Current line number
+     */
+    public int getLineNumber() {
+        return lineNumber;
+    }
 
     /**
      * Returns the current tokenized atom
