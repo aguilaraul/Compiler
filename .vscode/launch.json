@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - JackAnalyzer",
+            "request": "launch",
+            "mainClass": "JackAnalyzer",
+            "projectName": "Compiler_c042d8d8"
+        }
+    ]
+}
