@@ -14,8 +14,7 @@ public class JackTokenizer {
 
     private Scanner inputFile;
     PrintWriter outputFile = null;
-    private String rawInput;
-    private String cleanInput ="";
+    private String rawLine, line = "", cleanLine;
     private int lineNumber;
 
     /**
@@ -44,63 +43,62 @@ public class JackTokenizer {
         }
     }
 
-    public void advance() {
-        // if current line starts with a comment then skip it
-        // otherwise add it to the single string of Jack code
+    public void readNextLine() {
         lineNumber++;
-        rawInput = inputFile.nextLine();
-        if(!rawInput.startsWith("//")) {
-            cleanInput += cleanSingleLineComments(rawInput);
+        rawLine = inputFile.nextLine();
+        line = cleanSingleLineComments(rawLine).trim();
+        line = cleanMultiLineComments(line);
+        line = cleanJavaDoc(line);
+
+        if(!line.isEmpty() || line != null) {
+            cleanLine = line.trim();
         }
+        
+        
     }
 
-    /**
-     * Cleans the line of Jack code of single line comments as it is read from the file
-     * @param line  The current line of Jack code from file
-     * @return      Current line of Jack code stripped of single line comments
-     */
     private String cleanSingleLineComments(String line) {
-        String clean = line;
         int commentIndex = line.indexOf("//");
-        if(commentIndex > 0) {
-            clean = line.substring(0, commentIndex);
+        if(commentIndex >= 0) {
+            return line.substring(0, commentIndex);
         }
 
-        clean = clean.trim();
+        return line;
+    }
+
+    private String cleanMultiLineComments(String line) {
+        String clean = line;
+        int start = line.indexOf("/*");
+        int end = line.indexOf("*/");
+
+        if(start >= 0) {
+            return line.substring(0, start);
+        }
+        if(line.startsWith("*")) {
+            return "";
+        }
+        if(end >= 0) {
+            return line.substring(end+2);
+        }
+
         return clean;
     }
 
-    /**
-     * Recursively cleans the Jack code of multiline comments
-     * @param line  The line of Jack code
-     * @return      Jack code stripped of multiline comments
-     */
-    public String cleanMultiLineComments(String line) {
+    private String cleanJavaDoc(String line) {
         String clean = line;
-        int first = line.indexOf("/*");
-        int last = line.indexOf("*/");
-        if(first < 0 && last < 0) {
-            return clean;
-        }
-        clean = line.substring(0, first) + line.substring(last+2);
-        clean = cleanMultiLineComments(clean);
-        return clean;
-    }
+        int start = line.indexOf("/**");
+        int end = line.indexOf("*/");
 
-    /**
-     * Recursively cleans the Jack code of Javadoc comments
-     * @param line  The line of Jack code
-     * @return      Jack code stripped of Javadoc comments
-     */
-    public String cleanJavaDoc(String line) {
-        String clean = line;
-        int first = line.indexOf("/**");
-        int last = line.indexOf("*/");
-        if(first < 0 && last < 0) {
-            return clean;
+        if(start >= 0) {
+            return line.substring(0, start);
         }
-        clean = line.substring(0, first) + line.substring(last+2);
-        clean = cleanJavaDoc(clean);
+        if(line.startsWith("*")) {
+            return "";
+        }
+        if(end >= 0) {
+            return line.substring(end+2);
+        }
+
         return clean;
     }
 
@@ -108,7 +106,7 @@ public class JackTokenizer {
     /* GETTERS */
 
     public String getCleanLine() {
-        return cleanInput;
+        return cleanLine;
     }
 
     /**

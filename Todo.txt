@@ -1,11 +1,7 @@
-ALGORITHM:
+TODO:
 
-* Read each line while striping comments, add trimmed part to overall string
-    * Recursively remove comments
-        * Strip remaining multi-line comments
-        * Strip remaining Javadoc
+* Read each line then strip away single line comment, multi-line comments, and Javadoc comments
 
-- Begin tokenizing everything into an array list
-
-- Take each token and decide which type, keyword, symbol, etc. it is
-    - (whileHasMoreTokens)
+Tasks:
+- After cleaning, split(" ") into different parts and store them in String[] or array list
+- After storing every token, take each token and decide which type, keyword, symbol, etc. it is using whileHasMoreTokens

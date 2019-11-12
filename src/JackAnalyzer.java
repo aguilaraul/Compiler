@@ -19,12 +19,12 @@ public class JackAnalyzer {
         // Open jack file to tokenize
         jackTokenizer.tokenizer(inputFileName);
         while(jackTokenizer.hasMoreLines()) {
-            jackTokenizer.advance();
+            jackTokenizer.readNextLine();
+            if(!jackTokenizer.getCleanLine().isEmpty())
+                System.out.println(jackTokenizer.getCleanLine());
         }
-        String line = jackTokenizer.getCleanLine();
-        line = jackTokenizer.cleanMultiLineComments(line);
-        line = jackTokenizer.cleanJavaDoc(line);
-        System.out.println("[:" + line + ":]");                 //@Debug: remove when done
+
+        //System.out.println("[:" + line + ":]");                 //@Debug: remove when done
         System.out.println("Done compiling. Program exiting.");
     }
 }
