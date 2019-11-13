@@ -20,10 +20,11 @@ public class JackAnalyzer {
         jackTokenizer.tokenizer(inputFileName);
         while(jackTokenizer.hasMoreLines()) {
             jackTokenizer.readNextLine();
-            if(!jackTokenizer.getCleanLine().isEmpty())
-                System.out.println(jackTokenizer.getCleanLine());
-        }
 
+            //jackTokenizer.printSplit();
+        }
+        System.out.println("TOKENS\n-------");
+        jackTokenizer.printTokens();
         //System.out.println("[:" + line + ":]");                 //@Debug: remove when done
         System.out.println("Done compiling. Program exiting.");
     }
