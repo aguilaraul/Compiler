@@ -1,4 +1,4 @@
-/**
+/*
  * @author  Raul Aguilar
  * @date    12 November 2019
  */
@@ -20,8 +20,7 @@ public class JackAnalyzer {
         jackTokenizer.tokenizer(inputFileName);
         while(jackTokenizer.hasMoreLines()) {
             jackTokenizer.readNextLine();
-
-            //jackTokenizer.printSplit();
+            jackTokenizer.printSplit();
         }
         System.out.println("TOKENS\n-------");
         jackTokenizer.printTokens();

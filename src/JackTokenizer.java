@@ -1,5 +1,4 @@
-
-/**
+/*
  * @author  Raul Aguilar
  * @date    12 November 2019
  * JackTokenizer: Removes all comments and white space from the input stream
@@ -16,7 +15,7 @@ public class JackTokenizer {
 
     private Scanner inputFile;
     PrintWriter outputFile = null;
-    private ArrayList<String> tokens = new ArrayList<String>();
+    private ArrayList<String> tokens = new ArrayList<>();
     private String[] splitTokens;
     private String rawLine, line = "", cleanLine;
     private int lineNumber;
@@ -35,14 +34,15 @@ public class JackTokenizer {
     }
 
     /**
-     * Checks if the .jack file has more lines to read. If there are more line to read, then return
-     * true; if not, then close Scanner and return false.
+     * Checks if the .jack file has more lines to read.
+     * If there are more line to read, then return true;
+     * If not, then close Scanner and return false.
      */
     public boolean hasMoreLines() {
         if(inputFile.hasNextLine()) {
             return true;
         } else {
-            //inputFile.close();
+            inputFile.close();
             return false;
         }
     }
@@ -53,10 +53,16 @@ public class JackTokenizer {
 
         // Clean line of comments
         line = cleanSingleLineComments(rawLine);
-        line = cleanMultiLineComments(line);
-        cleanLine = cleanAPIComments(line);
+        cleanLine = cleanMultiLineComments(line);
+        // TODO: Check if current line has a string by checking for quotation marks
+        // because we need to keep those together as one full line before splitting
+        // up the whole line into tokens
+
+        //cleanLine = "do Output.printString(\"Hello world!\");";
 
         splitTokens = cleanLine.split(" ");
+
+        String _1 = "do";
 
         // Parse tokens
         for(String s:splitTokens) {
@@ -80,14 +86,13 @@ public class JackTokenizer {
     }
 
     /**
-     * Cleans the current line of multiline comments
-     * Takes the current line after being stripped of single line comments and strips it of
-     * multiline comments
+     * Cleans the current line of multiline comments and API comments
+     * Takes the current line after being stripped of single line comments and
+     * strips it of multiline comments including API comments
      * @param line  Current line from file
      * @return      Current line without multiline comments
      */
     private String cleanMultiLineComments(String line) {
-        String clean = line;
         int start = line.indexOf("/*");
         int end = line.indexOf("*/");
 
@@ -101,59 +106,36 @@ public class JackTokenizer {
             return line.substring(end+2);
         }
 
-        return clean;
-    }
-
-    /**
-     * Cleans current line of API comments
-     * Takes the current line after being stripped of single and multiline comments and strips it
-     * of API comments
-     * @param line  Current line from file
-     * @return      Current line without API comments
-     */
-    private String cleanAPIComments(String line) {
-        String clean = line;
-        int start = line.indexOf("/**");
-        int end = line.indexOf("*/");
-
-        if(start >= 0) {
-            return line.substring(0, start);
-        }
-        if(line.startsWith("*")) {
-            return "";
-        }
-        if(end >= 0) {
-            return line.substring(end+2);
-        }
-
-        return clean;
+        return line;
     }
 
     private void parseTokens(String splitToken) {
-        if(splitToken.isEmpty()) {
-            return;
-        }
+        boolean foundSymbol = false;
+        int symbolIndex = 0;
+
+        /*if (splitToken.isEmpty()) {
+            tokens.add("");
+        }*/
 
         if(splitToken.length() == 1) {
             tokens.add(splitToken);
-            return;
         }
+        if(splitToken.length() > 1) {
+            for(int i = 0; i < splitToken.length(); i++) {
+                if(VALID_SYMBOLS.contains(""+splitToken.charAt(i))) {
+                    // current character is a symbol
+                    symbolIndex = i;
+                    foundSymbol = true;
+                    break;
+                }
+            }
 
-        //@Incomplete: This is adding the splitToken to the ArrayList more than once for some reason.
-        // It probably has something to do with the loop. Double check it
-
-        for(char st:splitToken.toCharArray()) {
-            if(VALID_SYMBOLS.indexOf(st) == -1) {
-                // did not find symbol
-                tokens.add(splitToken);
+            if(foundSymbol) {
+                tokens.add(splitToken.substring(0, symbolIndex)); // add before the symbol
+                tokens.add(splitToken.charAt(symbolIndex)+""); // add the symbol
+                parseTokens(splitToken.substring(symbolIndex+1));
             } else {
-                // found a symbol
-                String beforeSymbol = splitToken.substring(0, VALID_SYMBOLS.indexOf(st));
-                String theSymbol = "" + splitToken.charAt(VALID_SYMBOLS.indexOf(st));
-                String afterSymbol = splitToken.substring(VALID_SYMBOLS.indexOf(st));
-                tokens.add(beforeSymbol);
-                tokens.add(theSymbol);
-                //parseTokens();
+                tokens.add(splitToken);
             }
         }
     }

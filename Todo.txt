@@ -1,16 +1,26 @@
-TODO:
-
-* Read each line then strip away single line comment, multi-line comments, and API comments
-
 Tasks:
-? After cleaning, split(" ") into different parts and store them in parseTokens[]
-    - if parseTokens[] == 1, add to tokens<String>
-    - otherwise, take item in parseTokens[] and convert to char array to read through
-    to find a symbol
-        - if a symbol is found, split item into (before_symbol | symbol | after_symbol)
-        and add (before_symbol | symbol) to tokens<String>; (after_symbol) becomes the new toCharArray()
-        - Repeat for all items in the current parseTokens[]
-    - Read the next line
+? Before splitting each line, check if it has a String (look for "") because I need to keep
+    that String together before splitting up the whole line
 
+* split(" ") into different parts and store them in splitTokens[]
+
+? Parse each String in splitTokens[] into the ArrayList
+    * if String.isEmpty, tokens.add("");
+    * if String.length == 1, add splitToken
+    - if String.length > 1
+        - check each char in the String if it's a symbol
+            - if the current char is a symbol
+                - save the index of the symbol
+            - if the current char is not a symbol
+                - move to next char
+        - if no symbols are found
+            - add splitToken
+
+TODO:
 - After storing every token, take each token<String> and decide which type it is (keyword, symbol, etc.)
 using whileHasMoreTokens
+    - Write XML file with information
+
+
+Completed
+* Read each line then strip away single line comment, multi-line comments, and API comments
