@@ -169,9 +169,18 @@ public class JackTokenizer {
 
     public void writeTokens() {
         for(String t:tokens) {
-            outputFile.println(t);
+            if(t.charAt(0) == '"') {
+                outputFile.print("<stringConstant> ");
+                outputFile.print(t.substring(1,t.length()-1));
+                outputFile.println(" </stringConstant>");
+
+            }
         }
         outputFile.close();
+    }
+
+    public void writeTag() {
+
     }
 
     /* GETTERS */

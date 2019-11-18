@@ -1,15 +1,13 @@
 Tasks:
 
-- Now that I have each token stored into the ArrayList, I want to work on just writing them to an XML file.
-For now, I'm gonna work on writing to a (XML) file. Then I will figure out how to decide what each token
-is before writing it to the file
-    17 Nov 19
+- Start making guessCommandTokenType methods to make deciding which type it is easier.
+And to make xml tags
 
-
-TODO:
 - After storing every token, take each token<String> and decide which type it is (keyword, symbol, etc.)
 using whileHasMoreTokens
     - Write XML file with information
+
+TODO:
 
 
 Completed
@@ -26,6 +24,9 @@ Completed
                 - move to next char
         - if no symbols are found
             - add splitToken
+
+* Now that I have each token stored into the ArrayList, I want to work on just writing them to an XML file.
+For now, I'm gonna work on writing to a (XML) file. 17 Nov 19
 
 Abandoned:
 ? Before splitting each line, check if it has a String (look for "") because I need to keep

@@ -8,7 +8,8 @@ public class JackAnalyzer {
     public static void main(String[] args) {
         Scanner keyboard = new Scanner(System.in);
         JackTokenizer jackTokenizer = new JackTokenizer();
-        String inputFileName, outputFileName;
+        XMLWriter xmlWriter = new XMLWriter();
+        String inputFileName;
 
         // Input file name
         System.out.println("Please enter the .jack file name you would like to compile.");
