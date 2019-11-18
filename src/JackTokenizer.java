@@ -16,8 +16,7 @@ public class JackTokenizer {
     private Scanner inputFile;
     PrintWriter outputFile = null;
     private ArrayList<String> tokens = new ArrayList<>();
-    private String[] splitTokens;
-    private String rawLine, line = "", cleanLine;
+    private String cleanLine;
     private int lineNumber;
 
     /**
@@ -46,29 +45,20 @@ public class JackTokenizer {
             return false;
         }
     }
-    
-    public void readNextLine() {
+
+    /**
+     * Reads the next line from the Jack file, cleans it of comments, and parses
+     * it into tokens
+     */
+    public void parseNextLine() {
         lineNumber++;
-        rawLine = inputFile.nextLine();
+        String rawLine = inputFile.nextLine();
 
         // Clean line of comments
-        line = cleanSingleLineComments(rawLine);
+        String line = cleanSingleLineComments(rawLine);
         cleanLine = cleanMultiLineComments(line);
-        // TODO: Check if current line has a string by checking for quotation marks
-        // because we need to keep those together as one full line before splitting
-        // up the whole line into tokens
 
-        //cleanLine = "do Output.printString(\"Hello world!\");";
-
-        splitTokens = cleanLine.split(" ");
-
-        String _1 = "do";
-
-        // Parse tokens
-        for(String s:splitTokens) {
-            parseTokens(s);
-        }
-
+        parseTokens(cleanLine);
     }
 
     /**
@@ -109,20 +99,25 @@ public class JackTokenizer {
         return line;
     }
 
-    private void parseTokens(String splitToken) {
+    /**
+     * Recursively parses the current line into tokens split up by symbols
+     * PRECONDITION: Current line from Jack file is clean of comments
+     * @param line  The current line from the Jack file
+     */
+    private void parseTokens(String line) {
         boolean foundSymbol = false;
         int symbolIndex = 0;
 
-        /*if (splitToken.isEmpty()) {
-            tokens.add("");
-        }*/
-
-        if(splitToken.length() == 1) {
-            tokens.add(splitToken);
+        if (line.isEmpty()) {
+            return;
         }
-        if(splitToken.length() > 1) {
-            for(int i = 0; i < splitToken.length(); i++) {
-                if(VALID_SYMBOLS.contains(""+splitToken.charAt(i))) {
+
+        if(line.length() == 1) {
+            tokens.add(line.trim());
+        }
+        if(line.length() > 1) {
+            for(int i = 0; i < line.length(); i++) {
+                if(VALID_SYMBOLS.contains(""+line.charAt(i))) {
                     // current character is a symbol
                     symbolIndex = i;
                     foundSymbol = true;
@@ -131,25 +126,58 @@ public class JackTokenizer {
             }
 
             if(foundSymbol) {
-                tokens.add(splitToken.substring(0, symbolIndex)); // add before the symbol
-                tokens.add(splitToken.charAt(symbolIndex)+""); // add the symbol
-                parseTokens(splitToken.substring(symbolIndex+1));
+                if(symbolIndex != 0) {
+                    tokens.add(line.substring(0, symbolIndex).trim()); // add before the symbol
+                }
+                tokens.add(line.charAt(symbolIndex)+"".trim()); // add the symbol
+                parseTokens(line.substring(symbolIndex+1).trim()); // continue to parse after the symbol
             } else {
-                tokens.add(splitToken);
+                tokens.add(line);
             }
         }
+    }
+
+    /* XML Writer */
+    /**
+     * Opens the output file and gets ready to write into it
+     * @param fileName  Name of the output file
+     */
+    private void xmlWriter(String fileName) {
+        try {
+            outputFile = new PrintWriter(fileName);
+        } catch (FileNotFoundException e) {
+            System.err.println("Could not open output file " + fileName);
+            System.err.println("Run program again, make sure you have write permissions, etc.");
+            System.err.println("Program exiting.");
+            System.exit(0);
+        }
+    }
+
+    /**
+     * Sets the name of the output XML file and gets it ready to write
+     * @param fn Name of the input file name that will become the name
+     *                 of the output file
+     */
+    public void setFileName(String fn) {
+        String fileName = fn.substring(0, fn.lastIndexOf('.')) + ".xml";
+        xmlWriter(fileName);
+    }
+
+    public void close() {
+        outputFile.close();
+    }
+
+    public void writeTokens() {
+        for(String t:tokens) {
+            outputFile.println(t);
+        }
+        outputFile.close();
     }
 
     /* GETTERS */
 
     public String getCleanLine() {
         return cleanLine;
-    }
-
-    public void printSplit() {
-        for(String s:splitTokens) {
-            System.out.println(s);
-        }
     }
     
     public void printTokens() {

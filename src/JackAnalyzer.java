@@ -8,7 +8,7 @@ public class JackAnalyzer {
     public static void main(String[] args) {
         Scanner keyboard = new Scanner(System.in);
         JackTokenizer jackTokenizer = new JackTokenizer();
-        String inputFileName;
+        String inputFileName, outputFileName;
 
         // Input file name
         System.out.println("Please enter the .jack file name you would like to compile.");
@@ -16,15 +16,21 @@ public class JackAnalyzer {
         inputFileName = keyboard.nextLine();
         keyboard.close();
 
+        // Open output file
+        jackTokenizer.setFileName(inputFileName);
+
         // Open jack file to tokenize
         jackTokenizer.tokenizer(inputFileName);
         while(jackTokenizer.hasMoreLines()) {
-            jackTokenizer.readNextLine();
-            jackTokenizer.printSplit();
+            // Parsing each line into tokens
+            jackTokenizer.parseNextLine();
+
+            //@Debug: Print each line from the file
+            System.out.println(jackTokenizer.getCleanLine());
         }
         System.out.println("TOKENS\n-------");
         jackTokenizer.printTokens();
-        //System.out.println("[:" + line + ":]");                 //@Debug: remove when done
+        jackTokenizer.writeTokens();
         System.out.println("Done compiling. Program exiting.");
     }
 }
