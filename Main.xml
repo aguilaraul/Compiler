@@ -1,0 +1,23 @@
+	<symbol> class Main </symbol>
+	<symbol> { </symbol>
+	<symbol> function void main </symbol>
+	<symbol> ( </symbol>
+	<symbol> ) </symbol>
+	<symbol> { </symbol>
+	<symbol> do Output </symbol>
+	<symbol> . </symbol>
+	<symbol> printString </symbol>
+	<symbol> ( </symbol>
+<stringConstant> Hello world! </stringConstant>
+	<symbol> ) </symbol>
+	<symbol> ; </symbol>
+	<symbol> do Output </symbol>
+	<symbol> . </symbol>
+	<symbol> println </symbol>
+	<symbol> ( </symbol>
+	<symbol> ) </symbol>
+	<symbol> ; </symbol>
+	<symbol> return </symbol>
+	<symbol> ; </symbol>
+	<symbol> } </symbol>
+	<symbol> } </symbol>

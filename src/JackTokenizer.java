@@ -170,17 +170,23 @@ public class JackTokenizer {
     public void writeTokens() {
         for(String t:tokens) {
             if(t.charAt(0) == '"') {
-                outputFile.print("<stringConstant> ");
-                outputFile.print(t.substring(1,t.length()-1));
-                outputFile.println(" </stringConstant>");
-
+                writeTag(TokenType.STRING_CONST, t);
+            } else {
+                writeTag(TokenType.SYMBOL, t);
             }
         }
-        outputFile.close();
     }
 
-    public void writeTag() {
-
+    public void writeTag(TokenType type, String token) {
+        if(type == TokenType.STRING_CONST) {
+            outputFile.print("<stringConstant> ");
+            outputFile.print(token.substring(1,token.length()-1));
+            outputFile.println(" </stringConstant>");
+        } else {
+            outputFile.print("\t<"+type.name().toLowerCase()+"> ");
+            outputFile.print(token);
+            outputFile.println(" </"+type.name().toLowerCase()+">");
+        }
     }
 
     /* GETTERS */

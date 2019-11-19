@@ -2,6 +2,8 @@ Tasks:
 
 - Start making guessCommandTokenType methods to make deciding which type it is easier.
 And to make xml tags
+    - Easiest thing to start with would be to identify symbols
+        - length() == 1 (so can var names) && one of the valid symbols
 
 - After storing every token, take each token<String> and decide which type it is (keyword, symbol, etc.)
 using whileHasMoreTokens

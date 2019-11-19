@@ -8,7 +8,6 @@ public class JackAnalyzer {
     public static void main(String[] args) {
         Scanner keyboard = new Scanner(System.in);
         JackTokenizer jackTokenizer = new JackTokenizer();
-        XMLWriter xmlWriter = new XMLWriter();
         String inputFileName;
 
         // Input file name
@@ -32,6 +31,7 @@ public class JackAnalyzer {
         System.out.println("TOKENS\n-------");
         jackTokenizer.printTokens();
         jackTokenizer.writeTokens();
+        jackTokenizer.close();
         System.out.println("Done compiling. Program exiting.");
     }
 }
