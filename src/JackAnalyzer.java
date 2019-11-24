@@ -19,18 +19,14 @@ public class JackAnalyzer {
         // Open output file
         jackTokenizer.setFileName(inputFileName);
 
-        // Open jack file to tokenize
+        // Open jack file to read and tokenize
         jackTokenizer.tokenizer(inputFileName);
         while(jackTokenizer.hasMoreLines()) {
-            // Parsing each line into tokens
             jackTokenizer.parseNextLine();
-
-            //@Debug: Print each line from the file
-            System.out.println(jackTokenizer.getCleanLine());
         }
-        System.out.println("TOKENS\n-------");
-        jackTokenizer.printTokens();
-        jackTokenizer.writeTokens();
+
+        jackTokenizer.advance();
+
         jackTokenizer.close();
         System.out.println("Done compiling. Program exiting.");
     }

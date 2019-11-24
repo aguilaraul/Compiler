@@ -1,23 +1,23 @@
-	<symbol> class Main </symbol>
+	<keyword> class Main </keyword>
 	<symbol> { </symbol>
-	<symbol> function void main </symbol>
+	<keyword> function void main </keyword>
 	<symbol> ( </symbol>
 	<symbol> ) </symbol>
 	<symbol> { </symbol>
-	<symbol> do Output </symbol>
+	<keyword> do Output </keyword>
 	<symbol> . </symbol>
-	<symbol> printString </symbol>
+	<keyword> printString </keyword>
 	<symbol> ( </symbol>
 <stringConstant> Hello world! </stringConstant>
 	<symbol> ) </symbol>
 	<symbol> ; </symbol>
-	<symbol> do Output </symbol>
+	<keyword> do Output </keyword>
 	<symbol> . </symbol>
-	<symbol> println </symbol>
+	<keyword> println </keyword>
 	<symbol> ( </symbol>
 	<symbol> ) </symbol>
 	<symbol> ; </symbol>
-	<symbol> return </symbol>
+	<keyword> return </keyword>
 	<symbol> ; </symbol>
 	<symbol> } </symbol>
 	<symbol> } </symbol>

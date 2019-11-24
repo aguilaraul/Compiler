@@ -5,9 +5,11 @@
  * and breaks it into Jack-language tokens, as specified by the Jack grammar.
  */
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class JackTokenizer {
@@ -18,6 +20,12 @@ public class JackTokenizer {
     private ArrayList<String> tokens = new ArrayList<>();
     private String cleanLine;
     private int lineNumber;
+    private String token;
+    private TokenType tokenType;
+    private Keyword keyword;
+    private char symbol;
+    private int intConst;
+    private String stringVal;
 
     /**
      * Opens the input .jack file and gets ready to tokenize it
@@ -53,11 +61,8 @@ public class JackTokenizer {
     public void parseNextLine() {
         lineNumber++;
         String rawLine = inputFile.nextLine();
-
-        // Clean line of comments
         String line = cleanSingleLineComments(rawLine);
         cleanLine = cleanMultiLineComments(line);
-
         parseTokens(cleanLine);
     }
 
@@ -137,14 +142,64 @@ public class JackTokenizer {
         }
     }
 
+    /**
+     * Gets the next token from the input, and makes it the current token.
+     * This method should be called only if hasMoreTokens is true
+     * Initially there is no current token
+     */
+    public void advance() {
+        for(String t:tokens) {
+            token = t;
+            tokenType = tokenType(token);
+
+            /* Debug */
+            System.out.println("Atom: " + token);
+            System.out.println("Token Type: " + tokenType.name());
+            System.out.println();
+            /* End Debug */
+
+            writeTag();
+        }
+    }
+
+    /**
+     * Returns the type of the current token, as a constant
+     * @return Enum TokenType
+     */
+    private TokenType tokenType(String token) {
+        try {
+            intConst = Integer.parseInt(token);
+            return TokenType.INT_CONST;
+        } catch (NumberFormatException notAnInteger) {
+            if(token.charAt(0) == '"') {
+                stringVal = token.substring(1, token.length()-1);
+                return TokenType.STRING_CONST;
+            } else if(VALID_SYMBOLS.contains(token)) {
+                symbol = token.charAt(0);
+                return TokenType.SYMBOL;
+            }
+            return TokenType.KEYWORD;
+        }
+    }
+
+    /**
+     * Returns the character which is the current token.
+     * Should be called only if tokenType is SYMBOL
+     * @return the character symbol
+     */
+    private char symbol() {
+        return symbol;
+    }
+
     /* XML Writer */
+    
     /**
      * Opens the output file and gets ready to write into it
      * @param fileName  Name of the output file
      */
     private void xmlWriter(String fileName) {
         try {
-            outputFile = new PrintWriter(fileName);
+            outputFile = new PrintWriter(new FileOutputStream(fileName));
         } catch (FileNotFoundException e) {
             System.err.println("Could not open output file " + fileName);
             System.err.println("Run program again, make sure you have write permissions, etc.");
@@ -163,29 +218,26 @@ public class JackTokenizer {
         xmlWriter(fileName);
     }
 
+    /**
+     * Closes the output XML file stream
+     */
     public void close() {
         outputFile.close();
     }
 
-    public void writeTokens() {
-        for(String t:tokens) {
-            if(t.charAt(0) == '"') {
-                writeTag(TokenType.STRING_CONST, t);
-            } else {
-                writeTag(TokenType.SYMBOL, t);
-            }
-        }
-    }
-
-    public void writeTag(TokenType type, String token) {
-        if(type == TokenType.STRING_CONST) {
+    /**
+     * Writes XML tag with appropriate element and value pertaining
+     * to the current token
+     */
+    public void writeTag() {
+        if(tokenType == TokenType.STRING_CONST) {
             outputFile.print("<stringConstant> ");
-            outputFile.print(token.substring(1,token.length()-1));
+            outputFile.print(stringVal);
             outputFile.println(" </stringConstant>");
         } else {
-            outputFile.print("\t<"+type.name().toLowerCase()+"> ");
+            outputFile.print("\t<"+tokenType.name().toLowerCase()+"> ");
             outputFile.print(token);
-            outputFile.println(" </"+type.name().toLowerCase()+">");
+            outputFile.println(" </"+tokenType.name().toLowerCase()+">");
         }
     }
 
