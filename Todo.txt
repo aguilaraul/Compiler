@@ -1,3 +1,7 @@
 Tasks:
 
-- Check Character Entity References
+- Check if valid identifier name
+
+Done:
+
+* Check Character Entity References

@@ -1,6 +1,6 @@
 /*
  * @author  Raul Aguilar
- * @date    12 November 2019
+ * @date    25 November 2019
  * JackTokenizer: Removes all comments and white space from the input stream
  * and breaks it into Jack-language tokens, as specified by the Jack grammar.
  */
@@ -25,7 +25,7 @@ public class JackTokenizer {
     private String token;
     private TokenType tokenType;
     private int keyword;
-    private char symbol;
+    private String symbol;
     private int intConst;
     private String stringVal;
 
@@ -175,8 +175,26 @@ public class JackTokenizer {
                 stringVal = token.substring(1, token.length()-1);
                 return TokenType.STRING_CONST;
             } else if(VALID_SYMBOLS.contains(token)) {
-                symbol = token.charAt(0);
-                return TokenType.SYMBOL;
+                switch (token) {
+                    case "<":
+                        symbol = "&lt;";
+                        return TokenType.SYMBOL;
+                    case ">":
+                        symbol = "&gt;";
+                        return TokenType.SYMBOL;
+                    case "\"":
+                        symbol = "&quot;";
+                        return TokenType.SYMBOL;
+                    case "\'":
+                        symbol = "&apos;";
+                        return TokenType.SYMBOL;
+                    case "&":
+                        symbol = "&amp;";
+                        return TokenType.SYMBOL;
+                    default:
+                        symbol = token;
+                        return TokenType.SYMBOL;
+                }
             } else if(keywords.contains(token)) {
                 keyword = keywords.getKeyword(token);
                 return TokenType.KEYWORD;
@@ -186,7 +204,7 @@ public class JackTokenizer {
         }
     }
 
-    private static boolean isValidIdentifier(String symbol, int lineNumber) {
+    private boolean isValidIdentifier(String symbol, int lineNumber) {
         boolean isValidName = false;
         for(char c:symbol.toCharArray()) {
             if(VALID_IDENTIFIER.indexOf(c) == -1) {
@@ -248,6 +266,10 @@ public class JackTokenizer {
             outputFile.print("\t<integerConstant> ");
             outputFile.print(intConst());
             outputFile.println(" </integerConstant>");
+        } else if(tokenType == TokenType.SYMBOL) {
+            outputFile.print("\t<symbol> ");
+            outputFile.print(symbol());
+            outputFile.println(" </symbol>");
         } else {
             outputFile.print("\t<"+tokenType.name().toLowerCase()+"> ");
             outputFile.print(token);
@@ -267,11 +289,11 @@ public class JackTokenizer {
     }
 
     /**
-     * Returns the character which is the current token.
+     * Returns the character which is the current token as a String.
      * Should be called only if tokenType is SYMBOL.
-     * @return  The character symbol
+     * @return  String of the symbol
      */
-    private char symbol() {
+    private String symbol() {
         return symbol;
     }
 
