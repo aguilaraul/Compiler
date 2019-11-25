@@ -9,20 +9,22 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class JackTokenizer {
     private static String VALID_SYMBOLS = "{}()[].,;+-*/&|<>=~";
+    private static String VALID_IDENTIFIER = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.$:";
 
     private Scanner inputFile;
-    PrintWriter outputFile = null;
+    private PrintWriter outputFile = null;
+    private KeywordTable keywords = new KeywordTable();
     private ArrayList<String> tokens = new ArrayList<>();
     private String cleanLine;
     private int lineNumber;
     private String token;
     private TokenType tokenType;
-    private Keyword keyword;
+    private int keyword;
     private char symbol;
     private int intConst;
     private String stringVal;
@@ -113,10 +115,6 @@ public class JackTokenizer {
         boolean foundSymbol = false;
         int symbolIndex = 0;
 
-        if (line.isEmpty()) {
-            return;
-        }
-
         if(line.length() == 1) {
             tokens.add(line.trim());
         }
@@ -132,7 +130,13 @@ public class JackTokenizer {
 
             if(foundSymbol) {
                 if(symbolIndex != 0) {
-                    tokens.add(line.substring(0, symbolIndex).trim()); // add before the symbol
+                    // add before the symbol if it doesn't have quotation marks
+                    // split it up first
+                    if(line.charAt(0) != '"') {
+                        tokens.addAll(Arrays.asList(line.substring(0, symbolIndex).trim().split(" ")));
+                    } else {
+                        tokens.add(line.substring(0, symbolIndex).trim()); // add before the symbol
+                    }
                 }
                 tokens.add(line.charAt(symbolIndex)+"".trim()); // add the symbol
                 parseTokens(line.substring(symbolIndex+1).trim()); // continue to parse after the symbol
@@ -148,18 +152,13 @@ public class JackTokenizer {
      * Initially there is no current token
      */
     public void advance() {
+        outputFile.println("<tokens>");
         for(String t:tokens) {
             token = t;
             tokenType = tokenType(token);
-
-            /* Debug */
-            System.out.println("Atom: " + token);
-            System.out.println("Token Type: " + tokenType.name());
-            System.out.println();
-            /* End Debug */
-
             writeTag();
         }
+        outputFile.println("</tokens>");
     }
 
     /**
@@ -171,24 +170,35 @@ public class JackTokenizer {
             intConst = Integer.parseInt(token);
             return TokenType.INT_CONST;
         } catch (NumberFormatException notAnInteger) {
+            keywords.KeywordTable();
             if(token.charAt(0) == '"') {
                 stringVal = token.substring(1, token.length()-1);
                 return TokenType.STRING_CONST;
             } else if(VALID_SYMBOLS.contains(token)) {
                 symbol = token.charAt(0);
                 return TokenType.SYMBOL;
+            } else if(keywords.contains(token)) {
+                keyword = keywords.getKeyword(token);
+                return TokenType.KEYWORD;
+            } else {
+                return TokenType.IDENTIFIER;
             }
-            return TokenType.KEYWORD;
         }
     }
 
-    /**
-     * Returns the character which is the current token.
-     * Should be called only if tokenType is SYMBOL
-     * @return the character symbol
-     */
-    private char symbol() {
-        return symbol;
+    private static boolean isValidIdentifier(String symbol, int lineNumber) {
+        boolean isValidName = false;
+        for(char c:symbol.toCharArray()) {
+            if(VALID_IDENTIFIER.indexOf(c) == -1) {
+                System.out.printf("Symbol name is not valid on line %d. Program exiting.", lineNumber);
+                isValidName = false;
+                System.exit(0);
+            } else {
+                isValidName = true;
+            }
+        }
+
+        return isValidName;
     }
 
     /* XML Writer */
@@ -229,11 +239,15 @@ public class JackTokenizer {
      * Writes XML tag with appropriate element and value pertaining
      * to the current token
      */
-    public void writeTag() {
+    private void writeTag() {
         if(tokenType == TokenType.STRING_CONST) {
-            outputFile.print("<stringConstant> ");
-            outputFile.print(stringVal);
+            outputFile.print("\t<stringConstant> ");
+            outputFile.print(stringVal());
             outputFile.println(" </stringConstant>");
+        } else if(tokenType == TokenType.INT_CONST) {
+            outputFile.print("\t<integerConstant> ");
+            outputFile.print(intConst());
+            outputFile.println(" </integerConstant>");
         } else {
             outputFile.print("\t<"+tokenType.name().toLowerCase()+"> ");
             outputFile.print(token);
@@ -242,6 +256,43 @@ public class JackTokenizer {
     }
 
     /* GETTERS */
+
+    /**
+     * Returns the keyword which is the current token, as a constant.
+     * Should be called only if tokenType is KEYWORD.
+     * @return  Integer constant of the keyword
+     */
+    private int keyWord() {
+        return keyword;
+    }
+
+    /**
+     * Returns the character which is the current token.
+     * Should be called only if tokenType is SYMBOL.
+     * @return  The character symbol
+     */
+    private char symbol() {
+        return symbol;
+    }
+
+    /**
+     * Returns the integer value of the current token.
+     * Should be called only if tokenType is INT_CONST.
+     * @return  Integer constant
+     */
+    private int intConst() {
+        return intConst;
+    }
+
+    /**
+     * Returns the string value of the current token, without the two
+     * enclosing double quotes.
+     * Should be called only if tokenType is STRING_CONST.
+     * @return  The string inside double quotes
+     */
+    private String stringVal() {
+        return stringVal;
+    }
 
     public String getCleanLine() {
         return cleanLine;
