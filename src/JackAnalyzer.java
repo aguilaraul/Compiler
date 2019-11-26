@@ -1,6 +1,12 @@
 /*
  * @author  Raul Aguilar
- * @date    24 November 2019
+ * @date    25 November 2019
+ * JackAnalyzer: The analyzer program operates on a given source, where source is either
+ * a file name of the form Xxx.jack or a directory name containing one or more such files.
+ * For each source Xxx.jack file, the analyzer goes through the following logic:
+ *  1. Create a JackTokenizer from the Xxx.jack input file.
+ *  2. Create an output file called Xxx.xml and prepare it for writing.
+ *  3. Use the CompilationEngine to compile the input JackTokenizer into the output file.
  */
 import java.util.Scanner;
 
