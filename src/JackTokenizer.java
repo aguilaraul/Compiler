@@ -16,8 +16,8 @@ public class JackTokenizer {
     private static String VALID_SYMBOLS = "{}()[].,;+-*/&|<>=~";
     private static String VALID_IDENTIFIER = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.$:";
 
+    private XMLWriter xmlWriter = new XMLWriter();
     private Scanner inputFile;
-    private PrintWriter outputFile = null;
     private KeywordTable keywords = new KeywordTable();
     private ArrayList<String> tokens = new ArrayList<>();
     private String cleanLine;
@@ -36,6 +36,7 @@ public class JackTokenizer {
     public void tokenizer(String fileName) {
         try {
             inputFile = new Scanner(new FileReader(fileName));
+            xmlWriter.setFileName(fileName);
         } catch (FileNotFoundException e) {
             System.err.println("File could not be found. Exiting program.");
             System.exit(0);
@@ -152,13 +153,14 @@ public class JackTokenizer {
      * Initially there is no current token
      */
     public void advance() {
-        outputFile.println("<tokens>");
+        xmlWriter.writeTag(true,"tokens");
         for(String t:tokens) {
             token = t;
             tokenType = tokenType(token);
-            writeTag();
+            xmlWriter.writeTokenTag(tokenType, token);
         }
-        outputFile.println("</tokens>");
+        xmlWriter.writeTag(false,"tokens");
+        xmlWriter.close();
     }
 
     /**
@@ -185,7 +187,7 @@ public class JackTokenizer {
                     case "\"":
                         symbol = "&quot;";
                         return TokenType.SYMBOL;
-                    case "\'":
+                    case "'":
                         symbol = "&apos;";
                         return TokenType.SYMBOL;
                     case "&":
@@ -219,64 +221,6 @@ public class JackTokenizer {
         return isValidName;
     }
 
-    /* XML Writer */
-    
-    /**
-     * Opens the output file and gets ready to write into it
-     * @param fileName  Name of the output file
-     */
-    private void xmlWriter(String fileName) {
-        try {
-            outputFile = new PrintWriter(new FileOutputStream(fileName));
-        } catch (FileNotFoundException e) {
-            System.err.println("Could not open output file " + fileName);
-            System.err.println("Run program again, make sure you have write permissions, etc.");
-            System.err.println("Program exiting.");
-            System.exit(0);
-        }
-    }
-
-    /**
-     * Sets the name of the output XML file and gets it ready to write
-     * @param fn Name of the input file name that will become the name
-     *                 of the output file
-     */
-    public void setFileName(String fn) {
-        String fileName = fn.substring(0, fn.lastIndexOf('.')) + ".xml";
-        xmlWriter(fileName);
-    }
-
-    /**
-     * Closes the output XML file stream
-     */
-    public void close() {
-        outputFile.close();
-    }
-
-    /**
-     * Writes XML tag with appropriate element and value pertaining
-     * to the current token
-     */
-    private void writeTag() {
-        if(tokenType == TokenType.STRING_CONST) {
-            outputFile.print("\t<stringConstant> ");
-            outputFile.print(stringVal());
-            outputFile.println(" </stringConstant>");
-        } else if(tokenType == TokenType.INT_CONST) {
-            outputFile.print("\t<integerConstant> ");
-            outputFile.print(intConst());
-            outputFile.println(" </integerConstant>");
-        } else if(tokenType == TokenType.SYMBOL) {
-            outputFile.print("\t<symbol> ");
-            outputFile.print(symbol());
-            outputFile.println(" </symbol>");
-        } else {
-            outputFile.print("\t<"+tokenType.name().toLowerCase()+"> ");
-            outputFile.print(token);
-            outputFile.println(" </"+tokenType.name().toLowerCase()+">");
-        }
-    }
-
     /* GETTERS */
 
     /**
@@ -284,7 +228,7 @@ public class JackTokenizer {
      * Should be called only if tokenType is KEYWORD.
      * @return  Integer constant of the keyword
      */
-    private int keyWord() {
+    public int keyWord() {
         return keyword;
     }
 
@@ -293,7 +237,7 @@ public class JackTokenizer {
      * Should be called only if tokenType is SYMBOL.
      * @return  String of the symbol
      */
-    private String symbol() {
+    public String symbol() {
         return symbol;
     }
 
@@ -302,7 +246,7 @@ public class JackTokenizer {
      * Should be called only if tokenType is INT_CONST.
      * @return  Integer constant
      */
-    private int intConst() {
+    public int intConst() {
         return intConst;
     }
 
@@ -312,18 +256,8 @@ public class JackTokenizer {
      * Should be called only if tokenType is STRING_CONST.
      * @return  The string inside double quotes
      */
-    private String stringVal() {
+    public String stringVal() {
         return stringVal;
-    }
-
-    public String getCleanLine() {
-        return cleanLine;
-    }
-    
-    public void printTokens() {
-        for(String t:tokens) {
-            System.out.println(t);
-        }
     }
 
     /**

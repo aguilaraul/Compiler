@@ -22,9 +22,6 @@ public class JackAnalyzer {
         inputFileName = keyboard.nextLine();
         keyboard.close();
 
-        // Open output file
-        jackTokenizer.setFileName(inputFileName);
-
         // Open jack file to read and tokenize
         jackTokenizer.tokenizer(inputFileName);
         while(jackTokenizer.hasMoreLines()) {
@@ -33,7 +30,6 @@ public class JackAnalyzer {
 
         jackTokenizer.advance();
 
-        jackTokenizer.close();
         System.out.println("Done compiling. Program exiting.");
     }
 }
