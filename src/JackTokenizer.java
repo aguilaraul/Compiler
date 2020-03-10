@@ -1,13 +1,11 @@
 /*
  * @author  Raul Aguilar
- * @date    25 November 2019
+ * @date    09 March 2020
  * JackTokenizer: Removes all comments and white space from the input stream
  * and breaks it into Jack-language tokens, as specified by the Jack grammar.
  */
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -36,7 +34,8 @@ public class JackTokenizer {
     public void tokenizer(String fileName) {
         try {
             inputFile = new Scanner(new FileReader(fileName));
-            xmlWriter.setFileName(fileName);
+            xmlWriter.setFileName(fileName.substring(0, fileName.lastIndexOf('.'))+"T.jack");
+            xmlWriter.setTokenizer(this);
         } catch (FileNotFoundException e) {
             System.err.println("File could not be found. Exiting program.");
             System.exit(0);
@@ -108,7 +107,9 @@ public class JackTokenizer {
     }
 
     /**
-     * Recursively parses the current line into tokens split up by symbols
+     * Recursively parses the current line into tokens split up by symbols.
+     * Adding each token from the line into an ArrayList containing all of
+     * tokens parsed from the file.
      * PRECONDITION: Current line from Jack file is clean of comments
      * @param line  The current line from the Jack file
      */
@@ -153,6 +154,14 @@ public class JackTokenizer {
      * Initially there is no current token
      */
     public void advance() {
+        parseNextLine();
+    }
+
+    /**
+     * Writes the tokens found in the file into and XML file with the
+     * proper tags.
+     */
+    public void writeToXML() {
         xmlWriter.writeTag(true,"tokens");
         for(String t:tokens) {
             token = t;

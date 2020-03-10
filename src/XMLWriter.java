@@ -1,6 +1,6 @@
 /**
  * @author  Raul Aguilar
- * @date    28 November 2019
+ * @date    09 March 2020
  */
 
 import java.io.FileNotFoundException;
@@ -37,6 +37,14 @@ public class XMLWriter {
     }
 
     /**
+     * Passes the JackTokenizer in order to access the current token
+     * @param jt
+     */
+    public void setTokenizer(JackTokenizer jt) {
+        jackTokenizer = jt;
+    }
+
+    /**
      * Closes the output XML file stream
      */
     public void close() {
@@ -58,15 +66,15 @@ public class XMLWriter {
     public void writeTokenTag(TokenType tokenType, String token) {
         if(tokenType == TokenType.STRING_CONST) {
             outputFile.print("\t<stringConstant> ");
-            outputFile.print(token);
+            outputFile.print(jackTokenizer.stringVal());
             outputFile.println(" </stringConstant>");
         } else if(tokenType == TokenType.INT_CONST) {
             outputFile.print("\t<integerConstant> ");
-            outputFile.print(token);
+            outputFile.print(jackTokenizer.intConst());
             outputFile.println(" </integerConstant>");
         } else if(tokenType == TokenType.SYMBOL) {
             outputFile.print("\t<symbol> ");
-            outputFile.print(token);
+            outputFile.print(jackTokenizer.symbol());
             outputFile.println(" </symbol>");
         } else {
             outputFile.print("\t<"+tokenType.name().toLowerCase()+"> ");

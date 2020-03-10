@@ -1,6 +1,6 @@
 /*
  * @author  Raul Aguilar
- * @date    25 November 2019
+ * @date    09 March 2020
  * JackAnalyzer: The analyzer program operates on a given source, where source is either
  * a file name of the form Xxx.jack or a directory name containing one or more such files.
  * For each source Xxx.jack file, the analyzer goes through the following logic:
@@ -14,6 +14,7 @@ public class JackAnalyzer {
     public static void main(String[] args) {
         Scanner keyboard = new Scanner(System.in);
         JackTokenizer jackTokenizer = new JackTokenizer();
+        CompilationEngine compilationEngine = new CompilationEngine();
         String inputFileName;
 
         // Input file name
@@ -25,10 +26,14 @@ public class JackAnalyzer {
         // Open jack file to read and tokenize
         jackTokenizer.tokenizer(inputFileName);
         while(jackTokenizer.hasMoreLines()) {
-            jackTokenizer.parseNextLine();
+            jackTokenizer.advance();
         }
+        // After tokenizing, write to xml file with tags
+        jackTokenizer.writeToXML();
 
-        jackTokenizer.advance();
+        // Feed the tokenized xml file into the Compilation Engine
+        compilationEngine.compilationEngine(inputFileName);
+        compilationEngine.compileStatements("token");
 
         System.out.println("Done compiling. Program exiting.");
     }

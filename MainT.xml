@@ -1,0 +1,21 @@
+<tokens>
+	<keyword> var </keyword>
+	<keyword> int </keyword>
+	<identifier> value </identifier>
+	<symbol> ; </symbol>
+	<keyword> if </keyword>
+	<symbol> ( </symbol>
+	<identifier> y </identifier>
+	<symbol> &gt; </symbol>
+	<identifier> x </identifier>
+	<symbol> ) </symbol>
+	<symbol> { </symbol>
+	<keyword> let </keyword>
+	<identifier> value </identifier>
+	<symbol> = </symbol>
+	<identifier> x </identifier>
+	<symbol> &amp; </symbol>
+	<identifier> y </identifier>
+	<symbol> ; </symbol>
+	<symbol> } </symbol>
+</tokens>
