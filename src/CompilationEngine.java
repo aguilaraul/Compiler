@@ -10,6 +10,7 @@ public class CompilationEngine {
     private XMLWriter xmlWriter = new XMLWriter();
     private Scanner inputFile;
     private TokenType tokenType;
+    private String line;
 
     public void compilationEngine(String fileName) {
         try {
@@ -19,6 +20,10 @@ public class CompilationEngine {
             System.err.println("File could not be found. Exiting program.");
             System.exit(0);
         }
+    }
+
+    public void close() {
+        xmlWriter.close();
     }
 
     /**
@@ -37,15 +42,31 @@ public class CompilationEngine {
 
     public void advance() {
         parseNextLine();
+        System.out.println("ADVANCE: " + tokenType);
+        if(tokenType == TokenType.KEYWORD) {
+            if(line.contains("class")) {
+                compileClass();
+            }
+        }
     }
 
     private void parseNextLine() {
-        String line = inputFile.nextLine();
+        line = inputFile.nextLine();
+        System.out.println(line);
+        tokenType = parseTokenType(line);
+    }
+
+    private TokenType parseTokenType(String line) {
         if(line.contains("keyword")) {
-            tokenType = TokenType.KEYWORD;
-            //@TODO Replace this with a method that returns the tokenType
-            // of the current line. From there I can decide what to do
-            // with it.
+            return TokenType.KEYWORD;
+        } else if (line.contains("symbol")) {
+            return TokenType.SYMBOL;
+        } else if (line.contains("integerConstant")) {
+            return TokenType.INT_CONST;
+        } else if (line.contains("stringConstant")) {
+            return TokenType.STRING_CONST;
+        } else {
+            return TokenType.IDENTIFIER;
         }
     }
 
@@ -53,11 +74,9 @@ public class CompilationEngine {
         //if(token.equals("do")) {
             xmlWriter.writeStringConstTag("Coming from the Compilation Engine!");
         //}
-
-        xmlWriter.close();
     }
 
-    private void compileDo() {
-
+    private void compileClass() {
+        xmlWriter.writeTag(true, "class");
     }
 }

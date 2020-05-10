@@ -33,7 +33,10 @@ public class JackAnalyzer {
 
         // Feed the tokenized xml file into the Compilation Engine
         compilationEngine.compilationEngine(inputFileName);
-        compilationEngine.compileStatements("token");
+        while(compilationEngine.hasMoreLines()) {
+            compilationEngine.advance();
+        }
+        compilationEngine.close();
 
         System.out.println("Done compiling. Program exiting.");
     }
