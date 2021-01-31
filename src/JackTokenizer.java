@@ -1,6 +1,7 @@
-/*
- * @author  Raul Aguilar
- * @date    09 March 2020
+/**
+ * JackTokenizer.java
+ * Author:  Raul Aguilar
+ * Date:    November 20, 2020
  * JackTokenizer: Removes all comments and white space from the input stream
  * and breaks it into Jack-language tokens, as specified by the Jack grammar.
  */

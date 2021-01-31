@@ -1,6 +1,7 @@
-/*
- *  @author Raul Aguilar
- *  @date   10 March 2020
+/**
+ * CompilationEngine.java
+ * Author:  Raul Aguilar
+ * Date:    November 20, 2020
  */
 import java.io.FileNotFoundException;
 import java.io.FileReader;

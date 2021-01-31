@@ -1,6 +1,7 @@
 /**
- * @author  Raul Aguilar
- * @date    09 March 2020
+ * XMLWriter.java
+ * Author:  Raul Aguilar
+ * Date:    November 20, 2020
  */
 
 import java.io.FileNotFoundException;

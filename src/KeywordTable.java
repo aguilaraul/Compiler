@@ -1,6 +1,7 @@
 /**
- * @author  Raul Aguilar
- * @date    24 November 2019
+ * KeywordTable.java
+ * Author:  Raul Aguilar
+ * Date:    November 20, 2020
  */
 import java.util.HashMap;
 
